@@ -1,0 +1,121 @@
+CSC236 Data Structures in Java
+Lab 1
+This lab is a review of topics from CSC162.
+
+Caesar Cipher
+Cryptography is the process of transforming messages so that they cannot be read by unauthorized parties. There are many different methods for encrypting messages; some are much more secure than others. A "more secure" method is one which is harder to break. Cryptography is essential in our society; it is used to protect all sorts of private data that is stored and transmitted online, such as credit card numbers. Modern cryptography methods are based on complex mathematical operations. In theory these cryptography methods can be cracked, but in practice (so far) they cannot be cracked because it would take too long for any existing computer to perform the necessary computations.
+
+A cipher is an algorithm that translates a message into an encoded form, so that it looks like gibberish to anyone who doesn't know how to decode the message. The cipher also provides the method to translate the message back to its original form. The original text is called plaintext; the encoded message is called ciphertext.
+
+Most ciphers use a key, which is a parameter that controls the encryption. To decrypt a message, it's necessary to have the key. Those who don't have the key cannot read the message.
+
+In this lab we will work with a very simple encryption method called the Caesar cipher. In a Caesar cipher the key is an integer n. To encode a message, each letter is shifted n positions forward in the alphabet. The letters at the end of the alphabet wrap around to the beginning of the alphabet. For example, if the key is 4, the shift transforms:
+
+   a -> e
+   b -> f
+   c -> g
+   ...
+   v -> z
+   w -> a
+   x -> b
+   y -> c
+   z -> d
+Special characters are not modified. So with a key of 4, the plaintext "Hi Mom!" is encoded into the ciphertext "Lm Qsq!". To decrypt a message, every character is shifted the same number of characters in the opposite direction.
+
+Enhanced Caesar Cipher
+Caesar Ciphers are simple to code but very easy to break. We can make the Caesar cipher a little more interesting by varying the key. To create an enhanced Caesar, we use a two part key: a shift key and a mod key. We require 0 <= mod key < shift key. Instead of always shifting by the same number of positions, we will use the mod key to vary the number of positions. The number of positions we will shift is as follows: shift key, (shift key + 1), (shift key + 2),...,(shift key + mod key). Then we start again with the shift key. For example, if the shift key is 5 and the mod key is 3, the number of positions we will shift is: 5 (shift key + 0), 6 (shift key + 1), 7 (shift key + 2), 8 (shift key + 3), 5 (shift key + 0), 6 (shift key + 1), 7 (shift key + 2), 8 (shift key + 3), and we continue this pattern until the whole plaintext String has been shifted.
+
+Code Breaking
+You will also break, or crack, our enhanced Caesar cipher. If you have an encoded message and you don't have the key, you can use a brute force algorithm. This type of algorithm is also known as exhaustive search or generate and test (generate a possible solution and test whether it is correct). The central idea for the algorithm is to decrypt the ciphertext using a potential shift key and mod key, and then test whether the result is the original plaintext. Since we don't have the original plaintext, we can evaluate the plaintext by checking whether it is made up of English words. If we get an English message we will assume that we have decrypted the message correctly. If not, we need to try another key. It's possible that two different keys could both result in plaintext of all valid English words, but this is not very likely and we will not be concerned with this possibility.
+
+To crack the code, we have to systematically try possible key/mod combinations until we find a combination that results in an English message. Since the 0 <= mod key < shift key, we try shift keys 1, 2, ..., max-shift-key and for each shift key we try each mod key that is valid. For example, if the maximum shift key we are going to use is 4:
+
+shift key	mod keys
+1	0
+2	0, 1
+3	0, 1, 2
+4	0, 1, 2, 3
+In your code use a maximum shift key of 10.
+
+After the cipher text is decoded with a potential shift key and mod key, the result is checked to see whether it is made up of English words. If we get a message that's all English words, then we have cracked the code. To check whether a word is a valid English word, we will use a dictionary. If the word is not in the dictionary, it is not an English word. Words must be all lowercase when they are looked up in the dictionary, since the dictionary is in lower case.
+
+Shifting Characters
+To shift characters during encoding and decoding we will take advantage of the fact that a character is stored as a number and that char is an integer type. In Java a char is a two byte field which contains characters stored as unicode. Unicode is a character encoding which extends ASCII (which is a one byte code) so that it is possible to store letters from many different alphabets. The unicode values of the English letters are the same as the ASCII values; see http://cs.middlesexcc.edu/~schatz/csc263/handouts/chart.html.
+
+Therefore, to shift a character we can add or subtract an int from the character. For example, 'c' + 5 is 'h', 'C' + 5 is 'H', and 'p' - 3 is 'm', 'P' - 3 is 'M'. We need to check for and handle shifts that wrap from the end to the beginning or from the beginning to the end of the alphabet.
+
+There is one complication when we add char and int values. If you recall from 161, Java will automatically perform type conversions for us, so long as the conversion is "safe". That means that if no information can be lost, Java will convert the value for you. These conversions are called "widening" conversions (because the value is being converted to a type which is larger, like short -> int or float -> double). Potentially "unsafe" conversions, where information could be lost, are called "narrowing" conversions. A narrowing conversion (like int -> short, double -> float) might result in the value of the variable being changed, such as when the value in an int is too large to fit in a short. Java will not perform a narrowing conversion; it will give you a complier error. You can force it to perform the narrowing conversion with a type cast. This tells the Java compiler, "yes I realize I could mess up my variable but I really want to do this".
+
+In your encode and decode you will be adding ints and chars: a letter from the message (char) and the key (int). If the result of this type of computation is stored in a char, you will get a compiler error. If you get a compiler error you can remove it by using a typecast.
+
+Skipping Non-Letters
+Java has a method that can help us here. The method isLetter is a static member of the Character class. The parm is a char; the method returns true if the parm is a letter, and false if it is not. It is static because there is no Character object on which to call the method; therefore, like all other static methods, it is called with the class name before the dot.
+
+Dictionary
+The Dictionary class will have a field to hold the words; the type of this field will be an ArrayList of Strings. The ArrayList is part of the Java API. To use it, you must import java.util.ArrayList.
+
+Create the following interface and use it when implementing the Dictionary class. The interface should be in a separate file from the Dictionary class.
+
+   public interface DictionaryInterface {
+      void addWord(String word);             //adds a new word to this dictionary
+      boolean isWord(String word);           //returns true if word is in the dictionary and false otherwise
+      int getSize();                         //number of words in the dictionary
+      void writeDict(String dictFileName);   // write the dictionary, parm is the filename
+   }
+In addition to these methods, create a constructor with one parm, a Scanner for the file containing the words for the dictionary. The constructor will read the words using the Scanner and store them in the ArrayList field of the Dictionary. Remember there is one word on each line of the dictionary file.
+
+Look up the ArrayList class to find the ArrayList methods you will need to call when you write your Dictionary methods. The Dictionary methods are actually pretty simple because the ArrayList methods do most of the work for you.
+
+Separating Words for Dictionary Lookup
+After the Breaker has created the potential plaintext, all the words must be looked up in the Dictionary to see if they are English words. The plaintext String will contain an unknown number of words, separated by one or more whitespace characters. White space is a name for the characters that usually separate words. The whitespace characters are blank, tab, and newline, which we write in our code as ' ', '\t', '\n'. To separate the words within the input line, we will use the split method in the String class. Look up the String class and read about the split method. You may not have heard of regular expressions, so don't worry if that part is confusing.
+
+The split method (String[] split(String regex)) separates the items (for us these are the words; in split they are called "tokens") in a String and stores them in an array of Strings. In general, tokens can be separated by whitespace, commas, slashes, or any other character(s). The parm to split specifies how to separate the tokens. In our input the tokens are words and they are separated by one or more whitespace characters. The value we will use to specify how to separate is "\\s+". Here is an explanation of "\\s+": '\s' represents any whitespace character. The extra \ indicates that '\s' represents one character, not the character '\' followed by the character 's'. The + means "one or more", so all together "\\s+" means "one or more whitespace characters". When we call split with this parm, it returns an array of Strings where each element of the array is one word of this.
+
+For example, if we have a String plaintext which contains the String
+
+All that is GOLD does not glitter    
+After the call
+
+   String[] words = plaintext.split("\\s+");
+the array words will contain
+
+words[0]	"All"
+words[1]	"that"
+words[2]	"is"
+words[3]	"GOLD"
+words[4]	"does"
+words[5]	"not"
+words[6]	"glitter"
+Once the plaintext is split, then each word can be looked up in the Dictionary. A lowercase version of the String should be looked up.
+
+Requirements
+Your program will consist of four classes.
+
+The Cipher class will contain the encrypt and decrypt methods. The keys should be stored as fields of the class. Both encrypt and decrypt have one parm: the String to be encrypted/decrypted. The String may include upper and lower case (which should be preserved) and special characters (which should not be modified). Both functions return the resulting String.
+The Breaker class will contain the method to break the Caesar cipher. The parms are the ciphertext String and the maximum shift key to try. The method will return the plaintext String. If none of the shift key/mod key pairs result in a message where all words are English, the method should return null.
+The Dictionary class will contain the dictionary. Remember, words in the dictionary are in lower case.
+The client code will do the following:
+prompt for the name of the file with plaintext Strings and the name of the file to hold the ciphertext
+prompt for the keys
+read each line of the file, encrypt it, and write the ciphertext to the output file
+prompt for the name of the file with ciphertext Strings and the name of the file to hold the plaintext
+prompt for the keys
+read each line of the file, decrypt it, and write the plaintext to the output file
+prompt for the name of the file with ciphertext to be broken and the name of the file to hold the plaintext
+read each line of the file and concatenate the input into one String, break it, and print the plaintext to the output file; if the code is not broken by any of the key/mod pairs, print a message on the screen and do not write anything to the output file.
+Hints
+Do not wait to get started. You have 3 weeks because this lab is going to take a lot of work.
+After you write your Dictionary class, write a driver to test it. Copy some of the words from the dictionary input file to make a small input file so that it's easier to check whether your code is working. Once you know it's working then you can use it in the Breaker class.
+Use a nested loop in the Breaker class to test possible key/mod pairs.
+Test your encryption first with a mod of 0, then try it with a nonzero mod. Start with a small input file so it's easy to check your results.
+Comments
+Make sure that you don't have any giant functions. A good rule of thumb is that the maximum size of a function should be about 30 lines of code (not counting comments).
+
+The dictionary file is on canvas in Files in the lab 1 directory.
+
+NO SET AND GET METHODS.
+
+
+Email Me | Office Hours | My Home Page | Department Home | MCC Home Page
+
+© Copyright Emmi Schatz 2022

@@ -1,0 +1,6 @@
+
+Name                ID Number           Department          Position            
+--------------------------------------------------------------------------------
+Susan Meyer         47899               Accounting          Vice President      
+Mark Jones          39119               IT                  Programmer          
+Joy Rogers          81774               Manufacturing       Engineer            

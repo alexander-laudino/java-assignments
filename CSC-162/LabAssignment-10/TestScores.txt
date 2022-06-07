@@ -1,0 +1,18 @@
+
+Test score #1: 97.9
+Test score #2: 86.5
+Test score #3: 74.7
+Test score #4: 61.2
+Test score #5: 50.1
+Test score #6: 40.8
+Test score #7: 100.0
+Test score #8: 81.9
+Test score #9: 74.1
+Test score #10: 96.23
+Test score #11: 87.45
+Test score #12: 91.02
+Test score #13: 74.91
+Test score #14: 99.9
+
+Average score: 74.45%
+Grade: C
