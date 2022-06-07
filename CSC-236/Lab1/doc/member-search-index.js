@@ -1,1 +1,0 @@
-memberSearchIndex = [{"p":"lab1.exceptions","c":"ShiftKeyOutofRange","l":"serialVersionUID"},{"p":"lab1.exceptions","c":"ShiftKeyOutofRange","l":"ShiftKeyOutofRange(int)","u":"%3Cinit%3E(int)"}];updateSearchResults();
